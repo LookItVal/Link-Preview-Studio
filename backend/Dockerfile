@@ -22,9 +22,6 @@ RUN composer install --no-dev --optimize-autoloader
 # Create the SQLite file so the app doesn't crash on start
 RUN touch /app/database/database.sqlite
 
-# Ensure Octane is installed and the FrankenPHP binary is present
-RUN php artisan octane:install --server=frankenphp
-
 # Optimized permissions for the web user
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/database
 
@@ -32,4 +29,4 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/database
 RUN php artisan route:cache && php artisan view:cache
 
 # Start FrankenPHP in worker mode
-ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80", "--http"]
+ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80"]

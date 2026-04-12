@@ -38,7 +38,7 @@ class PreviewController extends Controller
         // 3. For now, just return the raw body to prove it works
         return response()->json([
             'status' => 'success',
-            'raw_html' => substr($response->body(), 0, 500) // First 500 chars
+            'raw_html' => substr($response->body(), 0, 5) // First 5 chars
         ]);
     }
 }

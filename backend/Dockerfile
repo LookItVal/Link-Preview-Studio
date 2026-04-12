@@ -15,6 +15,8 @@ COPY . /app
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 ENV LOG_CHANNEL=stderr
+# Disable Auto-HTTPS and bind to port 80
+ENV SERVER_NAME=":80"
 
 # Install production dependencies
 RUN composer install --no-dev --optimize-autoloader
@@ -29,4 +31,4 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/database
 RUN php artisan route:cache && php artisan view:cache
 
 # Start FrankenPHP in worker mode
-ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80", "--http"]
+ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80"]

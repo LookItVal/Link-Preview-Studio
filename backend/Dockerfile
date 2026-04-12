@@ -29,4 +29,4 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/database
 RUN php artisan route:cache && php artisan view:cache
 
 # Start FrankenPHP in worker mode
-ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80"]
+ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80", "--http"]

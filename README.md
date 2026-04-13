@@ -83,7 +83,9 @@ Because I like it. Nuxt is a powerful framework that allows for rapid developmen
 ### Backend
 
 #### Setup
-The backend is a simple Laravel API that only has a single endpont to fetch and parse meta tags from a given URL. It uses Guzzle for HTTP requests and a custom parser to extract the relevant meta tags.
+The backend is a simple Laravel API that only has a single endpont at `/api/metadata` to fetch and parse meta tags from a given URL.
+The backend is entirely headless and open, and does not store any data from the requests it processes.
+It uses only a single controller at `app/Http/Controllers/MetadataController.php`, a single request handler at `app/Http/Requests/MetadataRequest.php`, and a single test file at `tests/Feature/MetadataEndpointTest.php`.
 
 #### Why Laravel?
 I have never built a Laravel app before, and I have very little experience with PHP. This was a great opportunity to prove that I can jump into this ecosystem and build something functional.
@@ -95,9 +97,9 @@ I could have deployed this into a traditional cloud provider, but I have a home 
 (This is mostly for me to check off the boxes as I go)
 
 ### Must Haves
-- [ ] URL input field
-- [ ] Server-side URL fetch
-- [ ] Meta tag extraction
+- [x] URL input field
+- [x] Server-side URL fetch
+- [x] Meta tag extraction
 - [ ] At least two platform preview cards
   - [ ] Twitter
   - [ ] Slack
@@ -107,7 +109,7 @@ I could have deployed this into a traditional cloud provider, but I have a home 
 - [ ] Error handling
   - [ ] Invalid URL format
   - [ ] Timeouts
-  - [ ] Pages with zero meta tags
+  - [x] Pages with zero meta tags
   - [ ] Non-200 HTTP responses
 - [x] README.md
 
@@ -120,7 +122,7 @@ I could have deployed this into a traditional cloud provider, but I have a home 
   - [ ] 3 way toggle for dark/light/auto (system preference)
 - [ ] Mobile-responsive layout
 - [ ] A UTM parameter builder that appends params to the URL before fetching
-- [ ] Live deployment
+- [x] Live deployment
 
 ## Live Deployment & GitOps
 This application is deployed via a GitOps pipeline:
@@ -131,6 +133,6 @@ CD: A k3s cluster pulls the updated image automatically upon merge.
 
 Tunnel: The backend is exposed securely via a Cloudflare Tunnel, while the Nuxt frontend is hosted on Cloudflare Pages for edge-network performance.
 
-Live URL: [Insert your tunnel/pages link here]
+Live URL: [here](https://link-preview-studio.lookitval.com)
 
 ## Future Improvements

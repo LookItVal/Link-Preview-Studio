@@ -1,10 +1,21 @@
 <template>
   <div class="page-content">
     <div class="logo" />
-    <div class="title">
-      <h1>Link Preview Studio</h1>
-    </div>
-    <MetadataUrlSearchbar />
+    <UICard
+      depth="surface"
+      class="p-(--m-em)"
+    >
+      <div class="title flex justify-center items-center pb-(--s-em) text-5xl">
+        <UIShimmeringText
+          text="Link Preview Studio"
+          as="h1"
+          fgColor="yellow"
+          bgColor="pink"
+          :speed="3"
+        />
+      </div>
+      <MetadataUrlSearchbar />
+    </UICard>
   </div>
 </template>
 

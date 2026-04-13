@@ -36,7 +36,7 @@ class MetadataRequest extends FormRequest
                 $ips = gethostbynamel($host);
 
                 if ($ips === false) {
-                    // DNS resolution failed — let the HTTP client handle it later
+                    $validator->errors()->add('url', 'The URL host could not be resolved.');
                     return;
                 }
 

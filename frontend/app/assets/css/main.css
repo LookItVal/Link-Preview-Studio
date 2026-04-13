@@ -1,0 +1,162 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "Inter";
+  src: url('fonts/inter.ttf') format("truetype");
+  font-display: swap;
+  font-weight: 125 950;
+  font-stretch: 75% 125%;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url('fonts/inter-oblique.ttf') format("truetype");
+  font-display: swap;
+  font-weight: 125 950;
+  font-stretch: 75% 125%;
+  font-style: oblique;
+}
+
+:root {
+  --font-display: "Inter", "sans-serif";
+  --font-comic: "Comic Sans MS";
+}
+
+/* Dark mode (Catppuccin Mocha) — default */
+body {
+  --color-rosewater: #f5e0dc;
+  --color-flamingo: #f2cdcd;
+  --color-pink: #f5c2e7;
+  --color-mauve: #cba6f7;
+  --color-red: #f38ba8;
+  --color-maroon: #eba0ac;
+  --color-peach: #fab387;
+  --color-yellow: #f9e2af;
+  --color-green: #a6e3a1;
+  --color-teal: #94e2d5;
+  --color-sky: #89dceb;
+  --color-sapphire: #74c7ec;
+  --color-blue: #89b4fa;
+  --color-lavender: #b4befe;
+  --color-text: #cdd6f4;
+  --color-subtext-100: #bac2de;
+  --color-subtext-200: #a6adc8;
+  --color-overlay-100: #9399b2;
+  --color-overlay-200: #7f849c;
+  --color-overlay-300: #6c7086;
+  --color-surface-100: #585b70;
+  --color-surface-200: #45475a;
+  --color-surface-300: #313244;
+  --color-base: #1e1e2e;
+  --color-mantle: #181825;
+  --color-crust: #11111b;
+  --purple-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-lavender),var(--color-mauve),var(--color-lavender));
+  --blue-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-sapphire),var(--color-blue),var(--color-sapphire));
+  --green-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-teal),var(--color-green),var(--color-teal));
+  --yellow-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-peach),var(--color-yellow),var(--color-peach));
+  --orange-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-maroon),var(--color-peach),var(--color-maroon));
+  --red-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-pink),var(--color-red),var(--color-pink));
+  --pink-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-pink),var(--color-flamingo),var(--color-pink));
+  --rgb-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-red),var(--color-green),var(--color-blue), var(--color-red));
+  --cmy-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-teal),var(--color-mauve),var(--color-yellow), var(--color-teal));
+  --trans-shimmer: conic-gradient(from 90deg at 50% 50%,var(--color-text),var(--color-pink),var(--color-sapphire), var(--color-text));
+}
+
+/* Light mode (Catppuccin Latte) */
+body.light {
+  --color-rosewater: #dc8a78;
+  --color-flamingo: #dd7878;
+  --color-pink: #ea76cb;
+  --color-mauve: #8839ef;
+  --color-red: #d20f39;
+  --color-maroon: #e64553;
+  --color-peach: #fe640b;
+  --color-yellow: #df8e1d;
+  --color-green: #40a02b;
+  --color-teal: #179299;
+  --color-sky: #04a5e5;
+  --color-sapphire: #209fb5;
+  --color-blue: #1e66f5;
+  --color-lavender: #7287fd;
+  --color-text: #4c4f69;
+  --color-subtext-100: #6c6f85;
+  --color-subtext-200: #5c5f77;
+  --color-overlay-100: #9ca0b0;
+  --color-overlay-200: #8c8fa1;
+  --color-overlay-300: #7c7f93;
+  --color-surface-100: #ccd0da;
+  --color-surface-200: #bcc0cc;
+  --color-surface-300: #acb0be;
+  --color-base: #eff1f5;
+  --color-mantle: #e6e9ef;
+  --color-crust: #dce0e8;
+}
+
+:root {
+  --xxxs-em: calc(1em / pow(1.618033988749, 3));
+  --xxs-em: calc(1em / pow(1.618033988749, 2));
+  --xs-em: calc(1em / pow(1.618033988749, 1));
+  --s-em: calc(1em / pow(1.618033988749, 0));
+  --m-em: calc(1em * pow(1.618033988749, 1));
+  --l-em: calc(1em * pow(1.618033988749, 2));
+  --xl-em: calc(1em * pow(1.618033988749, 3));
+  --xxl-em: calc(1em * pow(1.618033988749, 4));
+  --xxxl-em: calc(1em * pow(1.618033988749, 5));
+}
+
+body {
+  font-size: clamp(16px, 4vw, 2rem);
+  color: var(--color-subtext-100);
+  font-weight: 400;
+  line-height: 1.5;
+  background-color: var(--color-crust);
+}
+
+/* Hide scrollbars globally */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+h1, h2 {
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+h3 {
+  font-weight: 750;
+}
+
+h4 {
+  font-weight: 700;
+}
+
+h5 {
+  font-weight: 600;
+}
+
+h6 {
+  font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+}
+
+b {
+  font-weight: 600;
+}
+
+a {
+  transition: color 0.3s ease-in-out;
+  color: var(--color-mauve);
+  text-decoration: underline;
+}
+a:hover {
+  color: var(--color-lavender);
+}

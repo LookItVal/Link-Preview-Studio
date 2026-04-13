@@ -19,9 +19,14 @@ export function useMetaSearch() {
         },
         body: JSON.stringify({ url: query })
       });
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorPayload = await response.json().catch(() => null);
+        const message = errorPayload?.message || `HTTP error! status: ${response.status}`;
+
+        throw new Error(message);
       }
+
       searchResults.value = await response.json();
     } catch (err) {
       error.value = err instanceof Error ? err.message : String(err);

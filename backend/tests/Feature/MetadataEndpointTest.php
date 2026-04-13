@@ -51,26 +51,46 @@ test('returns 422 when url is invalid', function () {
         ->assertJsonPath('status', 'error');
 });
 
-test('returns 502 when the remote server returns an error', function () {
+test('returns 422 when url host cannot be resolved', function () {
+    $response = $this->postJson('/api/metadata', ['url' => 'https://nonexistent-host-for-preview.invalid']);
+
+    $response->assertStatus(422)
+        ->assertJsonPath('status', 'error')
+        ->assertJsonPath('message', 'The URL host could not be resolved.');
+});
+
+test('returns 422 when the remote URL returns a 4xx response', function () {
     Http::fake([
-        'https://down.example.com' => Http::response('', 500),
+        'https://example.com/missing' => Http::response('', 404),
     ]);
 
-    $response = $this->postJson('/api/metadata', ['url' => 'https://down.example.com']);
+    $response = $this->postJson('/api/metadata', ['url' => 'https://example.com/missing']);
+
+    $response->assertStatus(422)
+        ->assertJsonPath('status', 'error')
+        ->assertJsonPath('message', 'The provided URL returned HTTP 404.');
+});
+
+test('returns 502 when the remote server returns a 5xx error', function () {
+    Http::fake([
+        'https://example.com/down' => Http::response('', 500),
+    ]);
+
+    $response = $this->postJson('/api/metadata', ['url' => 'https://example.com/down']);
 
     $response->assertStatus(502)
         ->assertJsonPath('status', 'error')
-        ->assertJsonPath('message', 'Unable to fetch metadata from the provided URL.');
+        ->assertJsonPath('message', 'Upstream server error while fetching metadata (HTTP 500).');
 });
 
 test('returns 502 when the connection fails', function () {
     Http::fake([
-        'https://unreachable.example.com' => fn () => throw new \Illuminate\Http\Client\ConnectionException('Connection refused'),
+        'https://example.com/unreachable' => fn () => throw new \Illuminate\Http\Client\ConnectionException('Connection refused'),
     ]);
 
-    $response = $this->postJson('/api/metadata', ['url' => 'https://unreachable.example.com']);
+    $response = $this->postJson('/api/metadata', ['url' => 'https://example.com/unreachable']);
 
     $response->assertStatus(502)
         ->assertJsonPath('status', 'error')
-        ->assertJsonPath('message', 'Unable to reach the provided URL.');
+        ->assertJsonPath('message', 'Unable to reach the provided URL: Connection refused');
 });

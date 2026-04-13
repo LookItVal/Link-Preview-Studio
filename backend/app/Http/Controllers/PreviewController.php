@@ -14,17 +14,26 @@ class PreviewController
     {
         try {
             $response = Http::timeout(10)->get($request->validated('url'));
-        } catch (ConnectionException) {
+        } catch (ConnectionException $exception) {
+            $statusCode = str_contains(strtolower($exception->getMessage()), 'timed out') ? 504 : 502;
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unable to reach the provided URL.',
-            ], 502);
+                'message' => 'Unable to reach the provided URL: '.$exception->getMessage(),
+            ], $statusCode);
         }
 
         if ($response->failed()) {
+            if ($response->clientError()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'The provided URL returned HTTP '.$response->status().'.',
+                ], 422);
+            }
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unable to fetch metadata from the provided URL.',
+                'message' => 'Upstream server error while fetching metadata (HTTP '.$response->status().').',
             ], 502);
         }
 

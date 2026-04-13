@@ -1,20 +1,22 @@
 <template>
   <div class="w-full max-w-xl space-y-3">
     <form class="flex gap-2" @submit.prevent="onSubmit">
-      <input
-        v-model="inputUrl"
-        type="url"
-        placeholder="https://example.com"
-        class="flex-1 rounded border px-3 py-2"
-      >
-      <button
+      <UICard depth="overlay" class="flex-1">
+        <input
+          v-model="inputUrl"
+          type="url"
+          placeholder="https://example.com"
+          class="w-full rounded-full px-(--xs-em) py-2"
+        >
+      </UICard>
+      <UIShimmeringButton
         type="submit"
         :disabled="isLoading || !inputUrl.trim()"
-        class="rounded bg-blue-600 px-4 py-2 text-white"
-        :class="isLoading ? 'translate-y-px opacity-85 shadow-inner' : 'shadow-md hover:bg-blue-700 active:translate-y-px active:shadow-inner'"
       >
-        {{ isLoading ? 'Searching...' : 'Search' }}
-      </button>
+        <p class="font-semibold text-(--color-base)">
+          Search
+        </p>
+      </UIShimmeringButton>
     </form>
 
     <p v-if="error" class="text-sm text-red-500">
@@ -25,7 +27,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useMetaSearch } from '~/composable/useMetaSearch'
+import { useMetaSearch } from '~/composables/metaSearch'
 
 const inputUrl = ref('')
 const { searchResults, isLoading, error, performSearch } = useMetaSearch()

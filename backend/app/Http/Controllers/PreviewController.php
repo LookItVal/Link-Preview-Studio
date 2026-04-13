@@ -13,7 +13,9 @@ class PreviewController
     public function __invoke(MetadataRequest $request, MetadataExtractor $extractor): JsonResponse
     {
         try {
-            $response = Http::timeout(10)->followRedirects()->withHeaders([
+            $response = Http::timeout(10)->withOptions([
+                'allow_redirects' => true,
+            ])->withHeaders([
                 'User-Agent' => 'Link Preview Studio/1.0 (https://link-preview-studio.lookitval.com; qnncecil@gmail.com)',
             ])->get($request->validated('url'));
         } catch (ConnectionException $exception) {

@@ -105,12 +105,13 @@ I could have deployed this into a traditional cloud provider, but I have a home 
   - [ ] Slack
   - [ ] LinkedIn
   - [ ] Facebook
-- [ ] Checked URL history
-- [ ] Error handling
-  - [ ] Invalid URL format
-  - [ ] Timeouts
+- [x] Checked URL history
+- [x] Error handling
+  - [x] Invalid URL format
+  - [x] Timeouts
   - [x] Pages with zero meta tags
-  - [ ] Non-200 HTTP responses
+  - [x] Non-200 HTTP responses
+- [x] Cookie consent modal
 - [x] README.md
 
 ### Nice to Haves
@@ -118,8 +119,8 @@ I could have deployed this into a traditional cloud provider, but I have a home 
 - [ ] A meta tag completeness checklist or "health score"
 - [ ] Ability to copy any individual meta tag value to clipboard
 - [ ] Smooth transitions and micro-interactions in the UI
-- [ ] Dark mode & light mode switch
-  - [ ] 3 way toggle for dark/light/auto (system preference)
+- [x] Dark mode & light mode switch
+  - [x] 3 way toggle for dark/light/auto (system preference)
 - [ ] Mobile-responsive layout
 - [ ] A UTM parameter builder that appends params to the URL before fetching
 - [x] Live deployment
@@ -134,5 +135,21 @@ CD: A k3s cluster pulls the updated image automatically upon merge.
 Tunnel: The backend is exposed securely via a Cloudflare Tunnel, while the Nuxt frontend is hosted on Cloudflare Pages for edge-network performance.
 
 Live URL: [here](https://link-preview-studio.lookitval.com)
+
+## Testing Urls
+
+The following urls were used to test different scenarios and edge cases for the link preview functionality:
+- https://example.com
+- https://twitter.com
+- https://www.usatoday.com/story/entertainment/tv/2026/04/13/harry-potter-ralph-fiennes-voldemort-casting-hbo-tilda-swinton/89587435007/?utm_source=firefox-newtab-en-us
+- https://slack.com
+- http://facebook.com
+- http://linkedin.com
+- https://www.psypost.org/toddlers-are-happier-giving-treats-to-others-than-receiving-them-study-finds/
+- https://deepmind.google/models/gemma/gemma-4/
+- https://huggingface.co/collections/google/gemma-4
+- https://en.wikipedia.org/wiki/Standard_Model
+
+
 
 ## Future Improvements

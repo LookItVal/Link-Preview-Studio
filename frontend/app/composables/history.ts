@@ -5,77 +5,88 @@ export interface HistoryEntry {
   timestamp: number
 }
 
-interface HistoryCookieRef {
-  key: string
-  timestamp: number
+const MAX_HISTORY = 10
+const HISTORY_STORAGE_KEY = 'search-history'
+
+function loadPersistedHistory(): HistoryEntry[] {
+  if (!import.meta.client) {
+    return []
+  }
+
+  try {
+    const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY)
+    if (!raw) {
+      return []
+    }
+
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+
+    return parsed
+      .filter((entry: unknown): entry is HistoryEntry => {
+        if (!entry || typeof entry !== 'object') {
+          return false
+        }
+
+        const candidate = entry as HistoryEntry
+        return typeof candidate.url === 'string'
+          && (candidate.status === 'success' || candidate.status === 'error')
+          && typeof candidate.timestamp === 'number'
+      })
+      .slice(0, MAX_HISTORY)
+  }
+  catch {
+    return []
+  }
 }
 
-const MAX_HISTORY = 10
-const HISTORY_TTL_SECONDS = 60 * 60 * 24 * 30
-const HISTORY_INDEX_COOKIE = 'search-history-index'
-const HISTORY_ENTRY_PREFIX = 'search-history-entry'
+function savePersistedHistory(history: HistoryEntry[]) {
+  if (!import.meta.client) {
+    return
+  }
 
-function createHistoryEntryKey(timestamp: number): string {
-  return `${HISTORY_ENTRY_PREFIX}-${timestamp}-${Math.random().toString(36).slice(2, 9)}`
+  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)))
+}
+
+function clearPersistedHistory() {
+  if (!import.meta.client) {
+    return
+  }
+
+  window.localStorage.removeItem(HISTORY_STORAGE_KEY)
 }
 
 export function useHistory() {
-  const indexCookie = useCookie<HistoryCookieRef[]>(HISTORY_INDEX_COOKIE, {
-    default: () => [],
-    maxAge: HISTORY_TTL_SECONDS,
-    watch: true,
-  })
+  const { cookieSavingEnabled } = useCookieConsent()
 
   const historyState = useState<HistoryEntry[]>('search-history-state', () => [])
 
-  function deleteEntryCookie(key: string) {
-    const entryCookie = useCookie<HistoryEntry | null>(key, {
-      default: () => null,
-      maxAge: HISTORY_TTL_SECONDS,
-    })
-    entryCookie.value = null
-  }
-
-  function syncHistoryFromCookies() {
-    const refs = indexCookie.value ?? []
-    const nextRefs: HistoryCookieRef[] = []
-    const nextHistory: HistoryEntry[] = []
-
-    for (const ref of refs) {
-      const entryCookie = useCookie<HistoryEntry | null>(ref.key, {
-        default: () => null,
-        maxAge: HISTORY_TTL_SECONDS,
-      })
-
-      if (!entryCookie.value) {
-        continue
-      }
-
-      nextRefs.push(ref)
-      nextHistory.push(entryCookie.value)
+  function syncHistoryFromStorage() {
+    if (!cookieSavingEnabled.value) {
+      historyState.value = []
+      return
     }
 
-    while (nextRefs.length > MAX_HISTORY) {
-      const removed = nextRefs.pop()
-      nextHistory.pop()
-
-      if (removed) {
-        deleteEntryCookie(removed.key)
-      }
-    }
-
-    indexCookie.value = nextRefs
-    historyState.value = nextHistory
+    historyState.value = loadPersistedHistory()
   }
 
-  syncHistoryFromCookies()
+  syncHistoryFromStorage()
+
+  watch(cookieSavingEnabled, (enabled) => {
+    if (enabled) {
+      syncHistoryFromStorage()
+      return
+    }
+
+    historyState.value = []
+  })
 
   const history = computed(() => historyState.value)
 
   function addEntry(url: string, status: 'success' | 'error', response: any) {
-    const refs = indexCookie.value ?? []
     const timestamp = Date.now()
-    const key = createHistoryEntryKey(timestamp)
     const entry: HistoryEntry = {
       url,
       status,
@@ -83,33 +94,24 @@ export function useHistory() {
       timestamp,
     }
 
-    const entryCookie = useCookie<HistoryEntry | null>(key, {
-      default: () => null,
-      maxAge: HISTORY_TTL_SECONDS,
-    })
-    entryCookie.value = entry
-
-    refs.unshift({ key, timestamp })
-
-    while (refs.length > MAX_HISTORY) {
-      const removed = refs.pop()
-      if (removed) {
-        deleteEntryCookie(removed.key)
-      }
+    if (!cookieSavingEnabled.value) {
+      historyState.value = [entry, ...historyState.value].slice(0, MAX_HISTORY)
+      return
     }
 
-    indexCookie.value = refs
-    historyState.value = [entry, ...historyState.value].slice(0, MAX_HISTORY)
+    const nextHistory = [entry, ...historyState.value].slice(0, MAX_HISTORY)
+    historyState.value = nextHistory
+    savePersistedHistory(nextHistory)
   }
 
   function clearHistory() {
-    const refs = indexCookie.value ?? []
-    for (const ref of refs) {
-      deleteEntryCookie(ref.key)
+    if (!cookieSavingEnabled.value) {
+      historyState.value = []
+      return
     }
 
-    indexCookie.value = []
     historyState.value = []
+    clearPersistedHistory()
   }
 
   return {

@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
-      apiBase: 'https://link-preview-studio-api.lookitval.com/api'
+      apiBase: 'http://localhost/api'
     }
   },
   css: ['@/assets/css/main.css'],

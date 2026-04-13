@@ -14,10 +14,12 @@
           :speed="3"
         />
       </div>
-      <MetadataUrlSearchbar />
+      <MetadataUrlSearchbar :class="history.length ? 'mb-(--s-em)' : ''"/>
+      <MetadataHistory />
     </UICard>
   </div>
 </template>
 
 <script setup lang="ts">
+const { history } = useHistory()
 </script>

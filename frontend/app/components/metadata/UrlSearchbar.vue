@@ -1,36 +1,33 @@
 <template>
-  <div class="w-full max-w-xl space-y-3">
-    <form class="flex gap-2" @submit.prevent="onSubmit">
-      <UICard depth="overlay" class="flex-1">
-        <input
-          v-model="inputUrl"
-          type="url"
-          placeholder="https://example.com"
-          class="w-full rounded-full px-(--xs-em) py-2"
+  <UICard depth="overlay" :opacity="0.5">
+    <div class="w-full max-w-xl space-y-3 p-(--xs-em)">
+      <form class="flex gap-2" @submit.prevent="onSubmit">
+        <UICard depth="overlay" class="flex-1">
+          <input
+            v-model="inputUrl"
+            type="url"
+            placeholder="https://example.com"
+            class="w-full rounded-full px-(--xs-em) py-2"
+          >
+        </UICard>
+        <UIShimmeringButton
+          type="submit"
+          :disabled="isLoading || !inputUrl.trim()"
         >
-      </UICard>
-      <UIShimmeringButton
-        type="submit"
-        :disabled="isLoading || !inputUrl.trim()"
-      >
-        <p class="font-semibold text-(--color-base)">
-          Search
-        </p>
-      </UIShimmeringButton>
-    </form>
-
-    <p v-if="error" class="text-sm text-red-500">
-      {{ error }}
-    </p>
-
-    <pre class="min-h-24 overflow-auto rounded border bg-white/5 p-3 text-xs">{{ formattedResult }}</pre>
-  </div>
+          <p class="font-semibold text-(--color-base)">
+            Search
+          </p>
+        </UIShimmeringButton>
+      </form>
+    </div>
+  </UICard>
 </template>
 <script setup lang="ts">
 import { useMetaSearch } from '~/composables/metaSearch'
 
 const inputUrl = ref('')
 const { searchResults, isLoading, error, performSearch } = useMetaSearch()
+const { addEntry } = useHistory()
 
 const formattedResult = computed(() => {
   if (!searchResults.value) {
@@ -47,5 +44,6 @@ async function onSubmit() {
   }
 
   await performSearch(url)
+  addEntry(url, error.value ? 'error' : 'success', error.value ? { error: error.value } : searchResults.value)
 }
 </script>

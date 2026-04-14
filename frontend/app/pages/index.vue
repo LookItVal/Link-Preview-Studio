@@ -1,6 +1,12 @@
 <template>
-  <div class="page-content">
-    <div class="logo" />
+  <div>
+    <UIMenuBar
+      type="logo"
+      :animateOnMount="true"
+      startPosition="start"
+      :scrollLag="true"
+      class="pb-5"
+    />
     <UICard
       depth="surface"
       class="p-(--m-em)"

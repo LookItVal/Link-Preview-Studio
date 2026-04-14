@@ -100,11 +100,11 @@ I could have deployed this into a traditional cloud provider, but I have a home 
 - [x] URL input field
 - [x] Server-side URL fetch
 - [x] Meta tag extraction
-- [ ] At least two platform preview cards
-  - [ ] Twitter
-  - [ ] Slack
-  - [ ] LinkedIn
-  - [ ] Facebook
+- [x] At least two platform preview cards
+  - [x] Twitter
+  - [x] Slack
+  - [x] LinkedIn
+  - [x] Facebook
 - [x] Checked URL history
 - [x] Error handling
   - [x] Invalid URL format
@@ -115,7 +115,7 @@ I could have deployed this into a traditional cloud provider, but I have a home 
 - [x] README.md
 
 ### Nice to Haves
-- [ ] Additional platform preview card(s)
+- [x] Additional platform preview card(s)
 - [ ] A meta tag completeness checklist or "health score"
 - [ ] Ability to copy any individual meta tag value to clipboard
 - [ ] Smooth transitions and micro-interactions in the UI

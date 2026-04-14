@@ -52,7 +52,7 @@ const description = computed(() => {
   return props.entry.response?.data?.og?.description ||
          props.entry.response?.data?.twitter?.description ||
          props.entry.response?.data?.description ||
-         'No description available for this result.'
+         ''
 })
 
 const image = computed(() => {

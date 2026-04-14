@@ -14,7 +14,7 @@
           :speed="3"
         />
       </div>
-      <MetadataUrlSearchbar :class="history.length ? 'mb-(--s-em)' : ''"/>
+      <MetadataUrlSearchbar :class="hasHistory ? 'mb-(--xs-em)' : ''"/>
       <MetadataHistory />
     </UICard>
   </div>
@@ -22,4 +22,14 @@
 
 <script setup lang="ts">
 const { history } = useHistory()
+
+const hasHistory = ref(false)
+
+onMounted(() => {
+  hasHistory.value = history.value.length > 0
+})
+
+watch(() => history.value.length > 0, (val) => {
+  hasHistory.value = val
+})
 </script>

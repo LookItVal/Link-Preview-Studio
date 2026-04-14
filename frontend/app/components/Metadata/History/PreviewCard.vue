@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-2 p-(--xs-em)">
+  <div class="space-y-2 p-(--xs-em) bg-white rounded-(--xs-em)">
     <div class="flex items-center justify-between">
       <p class="text-xs font-semibold tracking-wide uppercase text-(--color-subtext0)">
         {{ platformLabel }} preview

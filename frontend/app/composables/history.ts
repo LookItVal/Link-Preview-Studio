@@ -114,9 +114,24 @@ export function useHistory() {
     clearPersistedHistory()
   }
 
+  function removeEntry(entryToRemove: HistoryEntry) {
+    const nextHistory = historyState.value.filter(entry =>
+      !(entry.timestamp === entryToRemove.timestamp && entry.url === entryToRemove.url),
+    )
+
+    historyState.value = nextHistory
+
+    if (!cookieSavingEnabled.value) {
+      return
+    }
+
+    savePersistedHistory(nextHistory)
+  }
+
   return {
     history,
     addEntry,
     clearHistory,
+    removeEntry,
   }
 }

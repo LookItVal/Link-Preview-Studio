@@ -1,11 +1,16 @@
 export function useMetaSearch() {
+  type SearchError = {
+    status: number | null
+    message: string
+  }
+
   const config = useRuntimeConfig();
   const apiBase = config.public.apiBase.replace(/\/$/, '');
   const endpoint = `${apiBase}/metadata`;
 
   const searchResults = ref(null);
   const isLoading = ref(false);
-  const error = ref<string | null>(null);
+  const error = ref<SearchError | null>(null);
 
   async function performSearch(query: string) {
     isLoading.value = true;
@@ -23,13 +28,18 @@ export function useMetaSearch() {
       if (!response.ok) {
         const errorPayload = await response.json().catch(() => null);
         const message = errorPayload?.message || `HTTP error! status: ${response.status}`;
-
-        throw new Error(message);
+        error.value = { status: response.status, message };
+        searchResults.value = null;
+        return;
       }
 
       searchResults.value = await response.json();
     } catch (err) {
-      error.value = err instanceof Error ? err.message : String(err);
+      error.value = {
+        status: null,
+        message: err instanceof Error ? err.message : String(err),
+      };
+      searchResults.value = null;
     } finally {
       isLoading.value = false;
     }

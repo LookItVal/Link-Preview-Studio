@@ -23,7 +23,7 @@
               class="shrink-0 text-xs font-semibold py-0.5 rounded-full"
               :class="entry.status === 'success' ? 'text-green' : 'text-red'"
             >
-              {{ entry.status }}
+              {{ statusText }}
             </span>
           </div>
 
@@ -104,6 +104,23 @@ const { removeEntry } = useHistory()
 const props = defineProps<{
   entry: HistoryEntry
 }>()
+
+const statusText = computed(() => {
+  if (props.entry.status === 'success') {
+    return 'success'
+  }
+
+  const rawError = props.entry.response?.error
+  if (typeof rawError === 'string') {
+    return rawError
+  }
+
+  const description = typeof rawError?.message === 'string' && rawError.message.trim()
+    ? rawError.message
+    : 'error'
+
+  return description
+})
 
 function togglePreview(platform: SocialPlatform) {
   activePreview.value = activePreview.value === platform ? null : platform

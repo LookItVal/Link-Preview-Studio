@@ -43,6 +43,8 @@ async function onSubmit() {
     return
   }
 
+  inputUrl.value = ''
+
   await performSearch(url)
   addEntry(url, error.value ? 'error' : 'success', error.value ? { error: error.value } : searchResults.value)
 }

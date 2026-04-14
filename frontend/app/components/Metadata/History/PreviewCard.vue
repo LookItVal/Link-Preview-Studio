@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-2 p-(--xs-em) bg-white rounded-(--xs-em)">
+  <div :class="`space-y-2 p-(--xs-em) bg-(--color-crust) rounded-(--xs-em)`">
     <div class="flex items-center justify-between">
       <p class="text-xs font-semibold tracking-wide uppercase text-(--color-subtext0)">
         {{ platformLabel }} preview
@@ -24,6 +24,8 @@ import PreviewFacebook from '~/components/Preview/Facebook.vue'
 import PreviewLinkedIn from '~/components/Preview/LinkedIn.vue'
 import PreviewSlack from '~/components/Preview/Slack.vue'
 import PreviewTwitter from '~/components/Preview/Twitter.vue'
+
+const { mode } = useColorMode()
 
 type SocialPlatform = 'linkedin' | 'slack' | 'facebook' | 'twitter'
 

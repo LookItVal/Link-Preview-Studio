@@ -3,13 +3,13 @@
     <UIMenuBar
       type="logo"
       :animateOnMount="true"
-      startPosition="start"
       :scrollLag="true"
       class="absolute top-5 left-1/2 transform -translate-x-1/2"
     />
     <UICard
       depth="surface"
       class="p-(--m-em) mt-[3em]"
+      data-flip-id="page-content"
     >
       <div class="title flex justify-center items-center pb-(--s-em) text-5xl">
         <UIShimmeringText
@@ -20,7 +20,7 @@
           :speed="3"
         />
       </div>
-      <MetadataUrlSearchbar :class="hasHistory ? 'mb-(--xs-em)' : ''"/>
+      <MetadataUrlSearchbar />
       <MetadataHistory />
     </UICard>
   </div>

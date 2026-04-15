@@ -65,7 +65,7 @@ const image = computed(() => {
 const themeColor = computed(() => {
   return props.entry.response?.data?.og?.theme_color ||
          props.entry.response?.data?.twitter?.theme_color ||
-         props.entry.response?.data?.theme_color ||
+         props.entry.response?.data?.meta?.theme_color ||
          '#e8e8e8'
 })
 

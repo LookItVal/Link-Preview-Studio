@@ -1,8 +1,8 @@
 <template>
-  <nav ref="menuContainer" class="w-full flex flex-row justify-center items-center">
+  <nav ref="menuContainer" class="w-min flex flex-row justify-center items-center">
     <div
       ref="menuBar"
-      class="h-(--l-em) p-(--xxs-em) flex flex-row justify-between bg-(--color-surface-300) md:text-3xl text-xl w-content rounded-[20px]"
+      class="h-(--l-em) p-(--xxs-em) flex flex-row justify-between bg-(--color-surface-300) text-3xl w-content rounded-[20px]"
     >
       <UILogo
         ref="logo"
@@ -47,6 +47,8 @@ const logo = ref<InstanceType<typeof Logo> | null>(null);
 const barWidth = ref(0);
 const barHeight = ref(0);
 const barRadius = ref('0px');
+
+const ctx = ref<gsap.Context | null>(null);
 
 function toPosition(position: 'start' | 'first' | 'second' | 'final') {
   switch (position) {
@@ -165,13 +167,20 @@ onMounted(async () => {
     barRadius.value = getComputedStyle(menuBar.value).borderTopLeftRadius || '0px';
 
     if (props.animateOnMount) {
-      const ctx = gsap.context(() => {
+      ctx.value = gsap.context(() => {
         const timeline = gsap.timeline();
         timeline.add(animateEntrance());
       });
     } else {
-      toPosition(props.startPosition);
+      ctx.value = gsap.context(() => {});
+      ctx.value!.add(() => {
+        toPosition(props.startPosition);
+      });
     }
   }
+});
+
+onBeforeUnmount(() => {
+  ctx.value?.revert();
 });
 </script>

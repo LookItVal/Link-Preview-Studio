@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class='-outline-offset-1 relative w-[438px] max-w-full overflow-hidden rounded-[0.85714em] border border-[#e1e8ed] leading-[1.3em] text-black mx-auto'>
+  <div class="md:w-[524px] sm:w-[15em] w-[10em] max-w-full mx-auto">
+    <div class='-outline-offset-1 relative max-w-full overflow-hidden rounded-[0.85714em] border border-[#e1e8ed] leading-[1.3em] text-black mx-auto'>
       <div class="bg-cover bg-center bg-no-repeat">
         <div class="w-full relative h-0" style="padding-top: 52.33%;">
           <img :src="image" :alt="title" class="h-full w-full absolute top-0 object-cover block" />

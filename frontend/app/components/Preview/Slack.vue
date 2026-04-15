@@ -30,15 +30,23 @@ const sitename = computed(() => {
   return props.entry.response?.data?.og?.site_name ||
          props.entry.response?.data?.twitter?.site_name ||
          props.entry.response?.data?.site_name ||
+         host.value
+})
 
-         ''
+const host = computed(() => {
+  try {
+    return new URL(props.entry.url).hostname
+  }
+  catch {
+    return props.entry.url
+  }
 })
 
 const favicon = computed(() => {
   return props.entry.response?.data?.og?.favicon ||
          props.entry.response?.data?.twitter?.favicon ||
          props.entry.response?.data?.favicon ||
-         ''
+         'https://' + host.value + '/favicon.ico'
 })
 
 const title = computed(() => {

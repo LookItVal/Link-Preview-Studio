@@ -28,6 +28,7 @@ type SocialPlatform = 'linkedin' | 'slack' | 'facebook' | 'twitter'
 
 interface HistoryCardExpose {
   activePreview?: SocialPlatform | null | { value: SocialPlatform | null }
+  calcMaxWidth?: () => void
 }
 
 interface LeavingEntryState {
@@ -43,11 +44,15 @@ watch(() => history.value, async (newHistory, oldHistory) => {
   const newItems = newHistory.filter(
     newItem => !oldHistory.some(oldItem => isSameEntry(newItem, oldItem)),
   )
+  const leaving = oldHistory.filter(
+    item => !newHistory.some(newItem => isSameEntry(item, newItem)))
+  if (leaving.length && newItems.length) {
+    addHistoryWithOverflow(newHistory, oldHistory)
+    return
+  }
   if (newItems.length) {
     addHistoryEntry(newHistory, oldHistory)
   }
-  const leaving = oldHistory.filter(
-    item => !newHistory.some(newItem => isSameEntry(item, newItem)))
   if (leaving.length) {
     removeHistoryEntry(newHistory, oldHistory)
   }
@@ -68,6 +73,13 @@ function setCardRef(timestamp: number, element: unknown) {
 
 function getCardSelector(entry: any) {
   return `[data-flip-id="card-${entry.timestamp}"]`
+}
+
+function recalcAllCardWidths() {
+  cardRefs.value.forEach((ref) => {
+    const cardRef = ref as HistoryCardExpose
+    cardRef.calcMaxWidth?.()
+  })
 }
 
 function getCardActivePreview(entry: any): SocialPlatform | null {
@@ -123,11 +135,13 @@ function addHistoryEntry(newHistory: any[], oldHistory: any[]) {
 
     const timeline = gsap.timeline({ onComplete: () => {
       visibleHistory.value = [...newHistory]
+      recalcAllCardWidths()
     } })
     const flipState = Flip.getState(movingSelectors)
     const backgroundState = Flip.getState('[data-flip-id="history-bg"]')
     visibleHistory.value = [...newItems, ...oldHistory]
     await nextTick()
+    recalcAllCardWidths()
 
     timeline.add(Flip.from(backgroundState, {
       duration: movingTotalDuration,
@@ -151,7 +165,89 @@ function addHistoryEntry(newHistory: any[], oldHistory: any[]) {
 }
 
 function addHistoryWithOverflow(newHistory: any[], oldHistory: any[]) {
-  // Implementation for adding history with overflow handling
+  const newItems = newHistory.filter(
+    newItem => !oldHistory.some(oldItem => isSameEntry(newItem, oldItem)),
+  )
+  const movingItems = newHistory.filter(
+    newItem => oldHistory.some(oldItem => isSameEntry(newItem, oldItem)),
+  )
+  const leavingItems = oldHistory.filter(
+    item => !newHistory.some(newItem => isSameEntry(item, newItem))
+  )
+  if (!newItems.length || !leavingItems.length) {
+    throw new Error('No history items to add or remove in overflow')
+  }
+
+  const leavingItem = leavingItems[0]
+  const movingSelectors = movingItems
+    .map(item => `[data-flip-id="card-${item.timestamp}"]`)
+  const newItemsSelectors = newItems
+    .map(item => `[data-flip-id="card-${item.timestamp}"]`)
+  const leavingSelector = getCardSelector(leavingItem)
+
+  ctx.value?.add(async () => {
+    // Measure leaving position and capture states before DOM change
+    const leavingOffsetY = calculateCardOffsetY(oldHistory, leavingItem) - 68
+    const leavingActivePreview = getCardActivePreview(leavingItem)
+
+    const movingDuration = 0.5
+    const movingStagger = -0.05
+    const movingTotalDuration = movingDuration + Math.abs(movingStagger) * Math.max(movingSelectors.length - 1, 0)
+
+    const flipState = Flip.getState(movingSelectors)
+    const backgroundState = Flip.getState('[data-flip-id="history-bg"]')
+
+    // Update DOM: set final list + leaving clone
+    visibleHistory.value = [...newHistory]
+    leavingEntry.value = {
+      entry: leavingItem,
+      activePreview: leavingActivePreview,
+    }
+    await nextTick()
+    recalcAllCardWidths()
+
+    const timeline = gsap.timeline({ onComplete: () => {
+      visibleHistory.value = [...newHistory]
+      leavingEntry.value = null
+      recalcAllCardWidths()
+    } })
+
+    // Background resize
+    timeline.add(Flip.from(backgroundState, {
+      duration: movingTotalDuration,
+      ease: 'power2.out',
+    }), 0)
+
+    // Existing items move to new positions
+    if (movingSelectors.length) {
+      timeline.add(Flip.from(flipState, {
+        duration: movingDuration,
+        stagger: movingStagger,
+        ease: 'power1.inOut',
+        absolute: true,
+        targets: movingSelectors
+      }), 0)
+    }
+
+    // New items scale in
+    timeline.from(newItemsSelectors, {
+      scale: 0,
+      duration: 0.5,
+      ease: 'back.out(1.3)'
+    }, '>-0.1')
+
+    // Leaving clone: position then slide out
+    timeline.set(leavingSelector, {
+      x: 0,
+      y: leavingOffsetY
+    }, 0)
+    timeline.to(leavingSelector, {
+      opacity: 0,
+      y: leavingOffsetY+100,
+      duration: 0.5,
+      ease: 'power1.inOut'
+    }, 0)
+  })
 }
 
 

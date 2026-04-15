@@ -461,12 +461,11 @@ async function copyUrl() {
 onMounted(() => {
   ctx.value = gsap.context(() => {}, container.value ?? undefined)
 
-  nextTick(() => {
-    calcMaxWidth()
-    if (activePreview.value) {
-      syncIndicatorPosition(activePreview.value)
-    }
-  })
+  calcMaxWidth()
+
+  if (activePreview.value) {
+    nextTick(() => syncIndicatorPosition(activePreview.value))
+  }
 
   window.addEventListener('resize', handleResize)
 })
@@ -479,6 +478,7 @@ onBeforeUnmount(() => {
 defineExpose({
   activePreview,
   closeCurrentPreview,
+  calcMaxWidth,
 })
 </script>
 

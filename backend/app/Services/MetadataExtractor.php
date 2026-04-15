@@ -25,6 +25,7 @@ class MetadataExtractor
             'twitter' => $this->extractTwitter($xpath),
             'icons' => $this->extractIcons($xpath),
             'canonical' => $this->extractCanonical($xpath),
+            'fallback' => $this->extractFallback($xpath),
         ];
     }
 
@@ -116,5 +117,24 @@ class MetadataExtractor
         $node = $xpath->query('//link[@rel="canonical"]')->item(0);
 
         return $node?->getAttribute('href') ?: null;
+    }
+
+    private function extractFallback(DOMXPath $xpath): ?array
+    {
+        $node = $xpath->query('//img')->item(0);
+        $image = $node?->getAttribute('src') ?: null;
+
+        $node = $xpath->query('//p[string-length(text()) > 120]')->item(0);
+        $paragraph = $node?->textContent ?: null;
+
+        if ($image || $paragraph) {
+            return [
+                'image' => $image,
+                'paragraph' => $paragraph,
+            ];
+        }
+
+        return null;
+
     }
 }

@@ -166,8 +166,7 @@ onMounted(async () => {
 
     if (props.animateOnMount) {
       const ctx = gsap.context(() => {
-        toPosition('start');
-        const timeline = gsap.timeline({ onComplete: () => {} });
+        const timeline = gsap.timeline();
         timeline.add(animateEntrance());
       });
     } else {

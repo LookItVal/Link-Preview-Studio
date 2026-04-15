@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink to="/" style="aspect-ratio: 1000 / 450;">
+  <NuxtLink to="https://lookitval.com" style="aspect-ratio: 1000 / 450;">
     <svg height="100%" viewBox="0 0 1000 450" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="logo-gradient" cx="20%" cy="0%" r="150%" fx="50%" fy="50%">

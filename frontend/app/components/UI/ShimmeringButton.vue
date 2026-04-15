@@ -3,19 +3,24 @@
     <AnimationsGlareHover 
       v-if="props.glare"
       class="shimmering-button relative overflow-hidden rounded-full z-1"
+      :class="{ 'is-disabled': isDisabled }"
       style="width: max-content; height: 100%; border-radius: 50em; border-width: 0;"
     >
       <NuxtLink
         v-if="nuxtLinkUrl"
         :to="nuxtLinkUrl"
-        class="relative overflow-hidden z-1 cursor-pointer"
+        class="relative overflow-hidden z-1"
+        :class="isDisabled ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer'"
+        :aria-disabled="isDisabled"
         style="text-decoration: none;"
       >
         <slot />
       </NuxtLink>
       <button
         v-else
-        class="relative overflow-hidden z-1 cursor-pointer px-(--xs-em)"
+        class="relative overflow-hidden z-1 px-(--xs-em)"
+        :class="isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'"
+        :disabled="isDisabled"
         @click="handleClick"
       >
         <slot />
@@ -24,19 +29,24 @@
     <div 
       v-else
       class="shimmering-button relative overflow-hidden rounded-full z-1"
+      :class="{ 'is-disabled': isDisabled }"
       style="width: max-content; height: 100%; border-radius: 50em; border-width: 0;"
     >
       <NuxtLink
         v-if="nuxtLinkUrl"
         :to="nuxtLinkUrl"
-        class="relative overflow-hidden z-1 cursor-pointer px-(--xs-em)"
+        class="relative overflow-hidden z-1 px-(--xs-em)"
+        :class="isDisabled ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer'"
+        :aria-disabled="isDisabled"
         style="text-decoration: none;"
       >
         <slot />
       </NuxtLink>
       <button
         v-else
-        class="relative overflow-hidden z-1 cursor-pointer px-(--xs-em)"
+        class="relative overflow-hidden z-1 px-(--xs-em)"
+        :class="isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'"
+        :disabled="isDisabled"
         @click="handleClick"
       >
         <slot />
@@ -55,14 +65,18 @@ const props = withDefaults(defineProps<{
   color2?: keyof typeof _COLORS,
   glare?: boolean
   speed?: number,
+  disabled?: boolean,
   click?: (() => void) | string
 }>(), {
   color1: 'lavender',
   color2: 'mauve',
   glare: true,
   speed: 3,
+  disabled: false,
   click: () => {}
 })
+
+const isDisabled = computed(() => props.disabled)
 
 const nuxtLinkUrl = computed(() => {
   if (typeof props.click === 'string') {
@@ -81,6 +95,10 @@ const externalLinkUrl = computed(() => {
   return null;
 });
 const handleClick = () => {
+  if (isDisabled.value) {
+    return
+  }
+
   if (typeof props.click === 'function') {
     props.click();
     return;
@@ -102,6 +120,18 @@ const conicGradient: Ref<string> = ref(`conic-gradient(from 90deg at 50% 50%, va
   width: max-content;
   height: max-content;
 
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: 50em;
+    background: rgba(120, 120, 120, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
   &::before {
     will-change: transform rotate;
     contain: layout style paint;
@@ -117,10 +147,17 @@ const conicGradient: Ref<string> = ref(`conic-gradient(from 90deg at 50% 50%, va
     background: v-bind('conicGradient');
     animation-name: rotate;
     animation-duration: v-bind('props.speed + "s"');
+    animation-play-state: v-bind('props.speed <= 0 ? "paused" : "running"');
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     transform-origin: center center;
     pointer-events: none;
+  }
+
+  &.is-disabled {
+    &::after {
+      opacity: 1;
+    }
   }
 }
 

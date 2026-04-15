@@ -4,7 +4,7 @@
       ref="background"
       class="card-background"
       :style="{
-        borderRadius: borderRadius + 'rem',
+        borderRadius: borderRadius + 'em',
         backgroundColor: backgroundColor,
         opacity: opacity
       }"
@@ -24,7 +24,7 @@ const colorMap = {
   item: 'var(--color-surface-100)'
 }
 const radiusMap = {
-  item: 1 * 1.618033988749 ** 1
+  item: 1
 } as Record<string, number>
 radiusMap['overlay'] = radiusMap['item']! * 1.618033988749
 radiusMap['surface'] = radiusMap['overlay']! * 1.618033988749

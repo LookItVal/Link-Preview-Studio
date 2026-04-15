@@ -9,20 +9,20 @@
     >
       <div class="flex items-start gap-2 p-(--xxxs-em)">
         <div class="min-w-0 flex-1 space-y-2">
-          <div class="flex items-center gap-2">
-          <UICard depth="item" :opacity="0.5" class="flex items-center gap-1 p-(--xxxs-em)">
-            <button
-              type="button"
-              aria-label="Delete history item"
-              class="min-w-(--s-em) aspect-square cursor-pointer flex shrink-0 items-center justify-center rounded-full text-(--color-subtext0) hover:text-(--color-red) transition-all duration-200"
-              @click="deleteEntry"
-            >
-              <Icon name="mdi:close" class="text-[1rem]" />
-            </button>
-          </UICard>
-            <div class="min-w-0 flex-1 flex content-center items-start flex-col">
-              <div class="flex w-full items-center gap-2">
-                <p class="truncate sm:text-[0.8rem] text-[0.56em] w-full">
+          <div class="flex w-full min-w-0 items-center justify-between gap-2">
+            <UICard depth="item" :opacity="0.5" class="flex items-center gap-1 p-(--xxxs-em)">
+              <button
+                type="button"
+                aria-label="Delete history item"
+                class="min-w-(--s-em) aspect-square cursor-pointer flex shrink-0 items-center justify-center rounded-full text-(--color-subtext0) hover:text-(--color-red) transition-all duration-200"
+                @click="deleteEntry"
+              >
+                <Icon name="mdi:close" class="text-[1rem]" />
+              </button>
+            </UICard>
+            <div ref="urlContainer" class="min-w-0 shrink-0 flex-1 basis-0 overflow-hidden flex content-center items-start flex-col" :style="{ maxWidth: urlMaxWidth != null ? urlMaxWidth + 'px' : undefined }">
+              <div class="flex max-w-full min-w-0 items-center gap-2 shrink-0">
+                <p class="block min-w-0 max-w-full flex-1 basis-0 overflow-hidden whitespace-nowrap sm:text-[0.8rem] text-[0.56em]" style="text-overflow: ellipsis;">
                   {{ entry.url }}
                 </p>
               </div>
@@ -146,7 +146,8 @@ const socialOptions: Array<{ platform: SocialPlatform, label: string, icon: stri
   { platform: 'facebook', label: 'Facebook', icon: 'mdi:facebook' },
   { platform: 'twitter', label: 'Twitter', icon: 'mdi:twitter' },
 ]
-
+const urlMaxWidth = ref<number | null>(null)
+const urlContainer = ref<HTMLElement | null>(null)
 const activePreview = ref<SocialPlatform | null>(props.initialActivePreview)
 const showCopied = ref(false)
 const showDetails = ref(false)
@@ -268,7 +269,28 @@ function syncIndicatorPosition(platform: SocialPlatform | null) {
   })
 }
 
+function calcMaxWidth() {
+  const pageContent = document.querySelector('[data-flip-id="page-content"]') as HTMLElement | null
+  const urlEl = urlContainer.value
+  if (!pageContent || !urlEl) {
+    return
+  }
+
+  
+  const pageWidth = document.documentElement.getBoundingClientRect().width
+  urlContainer.value?.style.setProperty('max-width', '')
+  const urlWidth = urlEl.getBoundingClientRect().width
+  const rowWidth = pageContent.getBoundingClientRect().width + parseFloat(getComputedStyle(pageContent).paddingLeft)
+
+  const nonUrlWidth = rowWidth - urlWidth
+  const available = pageWidth - nonUrlWidth
+
+  urlContainer.value?.style.setProperty('max-width', `${Math.max(0, available)}px`)
+  urlMaxWidth.value = Math.max(0, available)
+}
+
 function handleResize() {
+  calcMaxWidth()
   syncIndicatorPosition(activePreview.value)
 }
 
@@ -434,12 +456,17 @@ async function copyUrl() {
   setTimeout(() => { showCopied.value = false }, 2000)
 }
 
+
+
 onMounted(() => {
   ctx.value = gsap.context(() => {}, container.value ?? undefined)
 
-  if (activePreview.value) {
-    nextTick(() => syncIndicatorPosition(activePreview.value))
-  }
+  nextTick(() => {
+    calcMaxWidth()
+    if (activePreview.value) {
+      syncIndicatorPosition(activePreview.value)
+    }
+  })
 
   window.addEventListener('resize', handleResize)
 })

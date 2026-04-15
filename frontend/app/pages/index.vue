@@ -11,7 +11,7 @@
       class="p-(--m-em) mt-[3em]"
       data-flip-id="page-content"
     >
-      <div class="title flex justify-center items-center text-center pb-(--s-em) text-5xl">
+      <div class="title flex justify-center items-center text-center pb-(--s-em) sm:text-5xl text-2xl ">
         <UIShimmeringText
           text="Link Preview Studio"
           as="h1"

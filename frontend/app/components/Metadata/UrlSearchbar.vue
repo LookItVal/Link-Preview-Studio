@@ -12,7 +12,8 @@
         </UICard>
         <UIShimmeringButton
           type="submit"
-          :disabled="isLoading || !inputUrl.trim()"
+          :disabled="isLoading"
+          :speed="isLoading ? 0 : 3"
         >
           <p class="font-semibold text-(--color-base)">
             Search

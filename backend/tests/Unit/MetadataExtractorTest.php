@@ -128,6 +128,7 @@ test('returns nulls for missing tags', function () {
         ->and($result['meta'])->toBe([])
         ->and($result['og'])->toBe([])
         ->and($result['twitter'])->toBe([])
+        ->and($result['jsonLd'])->toBe([])
         ->and($result['icons'])->toBe([]);
 });
 
@@ -137,5 +138,156 @@ test('handles malformed html gracefully', function () {
     $result = $this->extractor->extract($html);
 
     expect($result)->toBeArray()
-        ->toHaveKeys(['title', 'description', 'meta', 'og', 'twitter', 'icons', 'canonical']);
+        ->toHaveKeys(['title', 'description', 'meta', 'og', 'twitter', 'jsonLd', 'icons', 'canonical']);
+});
+
+test('extracts json-ld structured data', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "name": "Test Article",
+            "headline": "Test Headline",
+            "description": "A test article description",
+            "image": "https://example.com/photo.jpg",
+            "author": {
+                "@type": "Person",
+                "name": "John Doe"
+            },
+            "datePublished": "2026-01-15",
+            "publisher": {
+                "@type": "Organization",
+                "name": "Example Corp"
+            }
+        }
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'])->toHaveCount(1);
+    expect($result['jsonLd'][0])->toBe([
+        'type' => 'Article',
+        'name' => 'Test Article',
+        'headline' => 'Test Headline',
+        'description' => 'A test article description',
+        'image' => 'https://example.com/photo.jpg',
+        'author' => 'John Doe',
+        'datePublished' => '2026-01-15',
+        'publisher' => 'Example Corp',
+    ]);
+});
+
+test('extracts json-ld with @graph array', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "name": "My Page",
+                    "description": "Page description"
+                },
+                {
+                    "@type": "Organization",
+                    "name": "My Org"
+                }
+            ]
+        }
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'])->toHaveCount(2);
+    expect($result['jsonLd'][0])->toBe([
+        'type' => 'WebPage',
+        'name' => 'My Page',
+        'description' => 'Page description',
+    ]);
+    expect($result['jsonLd'][1])->toBe([
+        'type' => 'Organization',
+        'name' => 'My Org',
+    ]);
+});
+
+test('extracts json-ld with image as string', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {"@type": "Article", "image": "https://example.com/img.jpg"}
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'][0]['image'])->toBe('https://example.com/img.jpg');
+});
+
+test('extracts json-ld with image as ImageObject', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {"@type": "Article", "image": {"@type": "ImageObject", "url": "https://example.com/img.jpg"}}
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'][0]['image'])->toBe('https://example.com/img.jpg');
+});
+
+test('extracts json-ld with image as array of urls', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {"@type": "Article", "image": ["https://example.com/a.jpg", "https://example.com/b.jpg"]}
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'][0]['image'])->toBe('https://example.com/a.jpg');
+});
+
+test('handles multiple json-ld script blocks', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {"@type": "WebSite", "name": "Site A"}
+        </script>
+        <script type="application/ld+json">
+        {"@type": "Article", "headline": "Article B"}
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'])->toHaveCount(2);
+    expect($result['jsonLd'][0]['name'])->toBe('Site A');
+    expect($result['jsonLd'][1]['headline'])->toBe('Article B');
+});
+
+test('skips invalid json-ld blocks', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">NOT VALID JSON</script>
+        <script type="application/ld+json">
+        {"@type": "Article", "name": "Valid"}
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'])->toHaveCount(1);
+    expect($result['jsonLd'][0]['name'])->toBe('Valid');
+});
+
+test('extracts json-ld with string author', function () {
+    $html = '<html><head>
+        <script type="application/ld+json">
+        {"@type": "Article", "author": "Jane Smith"}
+        </script>
+    </head></html>';
+
+    $result = $this->extractor->extract($html);
+
+    expect($result['jsonLd'][0]['author'])->toBe('Jane Smith');
 });

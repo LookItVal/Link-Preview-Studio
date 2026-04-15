@@ -23,6 +23,7 @@ class MetadataExtractor
             'meta' => $this->extractMeta($xpath),
             'og' => $this->extractOpenGraph($xpath),
             'twitter' => $this->extractTwitter($xpath),
+            'jsonLd' => $this->extractJsonLd($xpath),
             'icons' => $this->extractIcons($xpath),
             'canonical' => $this->extractCanonical($xpath),
             'fallback' => $this->extractFallback($xpath),
@@ -89,6 +90,97 @@ class MetadataExtractor
         }
 
         return $tags;
+    }
+
+    private function extractJsonLd(DOMXPath $xpath): array
+    {
+        $results = [];
+        $nodes = $xpath->query('//script[@type="application/ld+json"]');
+
+        foreach ($nodes as $node) {
+            $json = json_decode(trim($node->textContent), true);
+
+            if (! is_array($json)) {
+                continue;
+            }
+
+            // Handle @graph arrays — flatten them into individual entries
+            if (isset($json['@graph']) && is_array($json['@graph'])) {
+                foreach ($json['@graph'] as $item) {
+                    if (is_array($item)) {
+                        $results[] = $this->normalizeJsonLdItem($item);
+                    }
+                }
+
+                continue;
+            }
+
+            $results[] = $this->normalizeJsonLdItem($json);
+        }
+
+        return $results;
+    }
+
+    private function normalizeJsonLdItem(array $item): array
+    {
+        $normalized = [];
+
+        if (isset($item['@type'])) {
+            $normalized['type'] = $item['@type'];
+        }
+
+        if (isset($item['name'])) {
+            $normalized['name'] = $item['name'];
+        }
+
+        if (isset($item['headline'])) {
+            $normalized['headline'] = $item['headline'];
+        }
+
+        if (isset($item['description'])) {
+            $normalized['description'] = $item['description'];
+        }
+
+        if (isset($item['image'])) {
+            $image = $item['image'];
+
+            if (is_string($image)) {
+                $normalized['image'] = $image;
+            } elseif (is_array($image)) {
+                // Could be {"@type": "ImageObject", "url": "..."} or ["url1", "url2"]
+                if (isset($image['url'])) {
+                    $normalized['image'] = $image['url'];
+                } elseif (isset($image[0]) && is_string($image[0])) {
+                    $normalized['image'] = $image[0];
+                }
+            }
+        }
+
+        if (isset($item['author'])) {
+            $author = $item['author'];
+
+            if (is_string($author)) {
+                $normalized['author'] = $author;
+            } elseif (is_array($author) && isset($author['name'])) {
+                $normalized['author'] = $author['name'];
+            }
+        }
+
+        if (isset($item['datePublished'])) {
+            $normalized['datePublished'] = $item['datePublished'];
+        }
+
+        if (isset($item['publisher'])) {
+            $publisher = $item['publisher'];
+
+            if (is_string($publisher)) {
+                $normalized['publisher'] = $publisher;
+            } elseif (is_array($publisher) && isset($publisher['name'])) {
+                $normalized['publisher'] = $publisher['name'];
+            }
+        }
+
+        return $normalized;
     }
 
     private function extractIcons(DOMXPath $xpath): array

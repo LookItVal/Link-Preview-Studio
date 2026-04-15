@@ -29,6 +29,7 @@ const props = defineProps<{
 const sitename = computed(() => {
   return props.entry.response?.data?.og?.site_name ||
          props.entry.response?.data?.twitter?.site_name ||
+         jsonLd.value?.publisher ||
          props.entry.response?.data?.site_name ||
          host.value
 })
@@ -42,6 +43,8 @@ const host = computed(() => {
   }
 })
 
+const jsonLd = computed(() => props.entry.response?.data?.jsonLd?.[0])
+
 const favicon = computed(() => {
   return props.entry.response?.data?.og?.favicon ||
          props.entry.response?.data?.twitter?.favicon ||
@@ -52,6 +55,8 @@ const favicon = computed(() => {
 const title = computed(() => {
   return props.entry.response?.data?.og?.title ||
          props.entry.response?.data?.twitter?.title ||
+         jsonLd.value?.headline ||
+         jsonLd.value?.name ||
          props.entry.response?.data?.title ||
          'Untitled link'
 })
@@ -59,6 +64,7 @@ const title = computed(() => {
 const description = computed(() => {
   return props.entry.response?.data?.og?.description ||
          props.entry.response?.data?.twitter?.description ||
+         jsonLd.value?.description ||
          props.entry.response?.data?.description ||
          ''
 })
@@ -66,6 +72,7 @@ const description = computed(() => {
 const image = computed(() => {
   return props.entry.response?.data?.og?.image ||
          props.entry.response?.data?.twitter?.image ||
+         jsonLd.value?.image ||
          props.entry.response?.data?.image ||
          ''
 })

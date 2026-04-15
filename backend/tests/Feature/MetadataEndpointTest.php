@@ -16,6 +16,14 @@ $sampleHtml = <<<'HTML'
     <meta name="twitter:title" content="Twitter Example">
     <link rel="icon" href="/favicon.ico">
     <link rel="canonical" href="https://example.com/">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Example Page LD",
+        "description": "JSON-LD description"
+    }
+    </script>
 </head>
 <body></body>
 </html>
@@ -34,7 +42,10 @@ test('returns structured metadata for a valid url', function () use ($sampleHtml
         ->assertJsonPath('data.description', 'An example page for testing.')
         ->assertJsonPath('data.og.title', 'OG Example')
         ->assertJsonPath('data.twitter.card', 'summary_large_image')
-        ->assertJsonPath('data.canonical', 'https://example.com/');
+        ->assertJsonPath('data.canonical', 'https://example.com/')
+        ->assertJsonPath('data.jsonLd.0.type', 'WebPage')
+        ->assertJsonPath('data.jsonLd.0.name', 'Example Page LD')
+        ->assertJsonPath('data.jsonLd.0.description', 'JSON-LD description');
 });
 
 test('returns 422 when url is missing', function () {

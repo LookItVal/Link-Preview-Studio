@@ -34,9 +34,13 @@ const hostname = computed(() => {
   }
 })
 
+const jsonLd = computed(() => props.entry.response?.data?.jsonLd?.[0])
+
 const title = computed(() => {
   return props.entry.response?.data?.og?.title ||
          props.entry.response?.data?.twitter?.title ||
+         jsonLd.value?.headline ||
+         jsonLd.value?.name ||
          props.entry.response?.data?.title ||
          'Untitled link'
 })
@@ -44,6 +48,7 @@ const title = computed(() => {
 const image = computed(() => {
   return props.entry.response?.data?.og?.image ||
          props.entry.response?.data?.twitter?.image ||
+         jsonLd.value?.image ||
          props.entry.response?.data?.image ||
          ''
 })

@@ -3,7 +3,7 @@
     <div class="shrink-0 w-1 rounded-lg" :style="`background-color: ${themeColor};`" />
     <div class="px-3 max-w-[520px]">
       <div class="flex items-center">
-        <img class="rounded-sm box-content h-4 w-4 mr-1.5 overflow-hidden align-middle" :src="favicon" :alt="sitename"/>
+        <img class="rounded-sm box-content h-4 w-4 mr-1.5 overflow-hidden align-middle" :src="favicon"/>
         <span class="font-['Noto_Sans','NotoSansJP','Slack-Lato','Lato','appleLogo',sans-serif] text-[15px] text-[#717274] flex-1 overflow-hidden wrap-break-words">
           {{ sitename }}
         </span>

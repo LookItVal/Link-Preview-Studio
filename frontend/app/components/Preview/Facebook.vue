@@ -2,7 +2,7 @@
   <div class="md:w-[524px] sm:w-[15em] w-[10em] max-w-full mx-auto">
     <div v-if="image" class="bg-cover bg-center bg-no-repeat">
       <div class="w-full relative h-0 aspect-[0.525]" style="padding-top: 52.5%;">
-        <img class="h-full w-full absolute top-0 object-cover block" :src="image" :alt="title" />
+        <img class="h-full w-full absolute top-0 object-cover block" :src="image" />
       </div>
     </div>
     <div class="wrap-break-words bg-[#F0F2F5] px-4 pt-2.5 pb-1.5 antialiased font-[system-ui,-apple-system,BlinkMacSystemFont,Segoe_UI_Historic,Segoe_UI,Helvetica,Arial,sans-serif]">

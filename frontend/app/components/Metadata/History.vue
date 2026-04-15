@@ -3,14 +3,16 @@
     <MetadataHistoryCard
       v-for="entry in visibleHistory"
       :key="entry.timestamp"
+      :ref="element => setCardRef(entry.timestamp, element)"
       :entry="entry"
       :data-flip-id="`card-${entry.timestamp}`"
     />
     <MetadataHistoryCard
       v-if="leavingEntry"
-      :key="leavingEntry.timestamp"
-      :entry="leavingEntry"
-      :data-flip-id="`card-${leavingEntry.timestamp}`"
+      :key="leavingEntry.entry.timestamp"
+      :entry="leavingEntry.entry"
+      :initial-active-preview="leavingEntry.activePreview"
+      :data-flip-id="`card-${leavingEntry.entry.timestamp}`"
       class="absolute"
     />
   </div>
@@ -22,8 +24,20 @@ import Flip from 'gsap/Flip'
 
 const { history } = useHistory()
 const visibleHistory = ref([...history.value])
-const leavingEntry = ref<any | null>(null)
+type SocialPlatform = 'linkedin' | 'slack' | 'facebook' | 'twitter'
+
+interface HistoryCardExpose {
+  activePreview?: SocialPlatform | null | { value: SocialPlatform | null }
+}
+
+interface LeavingEntryState {
+  entry: any
+  activePreview: SocialPlatform | null
+}
+
+const leavingEntry = ref<LeavingEntryState | null>(null)
 const ctx = ref<gsap.Context | null>(null)
+const cardRefs = ref<Map<number, unknown>>(new Map())
 
 watch(() => history.value, async (newHistory, oldHistory) => {
   const newItems = newHistory.filter(
@@ -41,6 +55,46 @@ watch(() => history.value, async (newHistory, oldHistory) => {
 
 function isSameEntry(a: any, b: any) {
   return a.timestamp === b.timestamp && a.url === b.url
+}
+
+function setCardRef(timestamp: number, element: unknown) {
+  if (element) {
+    cardRefs.value.set(timestamp, element as HistoryCardExpose)
+    return
+  }
+
+  cardRefs.value.delete(timestamp)
+}
+
+function getCardSelector(entry: any) {
+  return `[data-flip-id="card-${entry.timestamp}"]`
+}
+
+function getCardActivePreview(entry: any): SocialPlatform | null {
+  const cardRef = cardRefs.value.get(entry.timestamp) as HistoryCardExpose | undefined
+  const activePreview = cardRef?.activePreview
+
+  if (activePreview && typeof activePreview === 'object' && 'value' in activePreview) {
+    return activePreview.value ?? null
+  }
+
+  return activePreview ?? null
+}
+
+function calculateCardOffsetY(historySnapshot: any[], leavingItem: any) {
+  const cardGap = 8
+  const leavingIndex = historySnapshot.findIndex(item => isSameEntry(item, leavingItem))
+
+  if (leavingIndex <= 0) {
+    return 0
+  }
+
+  return historySnapshot.slice(0, leavingIndex).reduce((offset, item) => {
+    const cardElement = document.querySelector(getCardSelector(item)) as HTMLElement | null
+    const cardHeight = cardElement?.offsetHeight ?? 0
+
+    return offset + cardHeight + cardGap
+  }, 0)
 }
 
 function addHistoryEntry(newHistory: any[], oldHistory: any[]) {
@@ -108,16 +162,15 @@ function removeHistoryEntry(newHistory: any[], oldHistory: any[]) {
   if (!leaving.length) {
     throw new Error('No history items to remove')
   }
+  const leavingItem = leaving[0]
   const movingSelectors = newHistory
     .filter(item => oldHistory.some(oldItem => isSameEntry(item, oldItem)))
     .map(item => `[data-flip-id="card-${item.timestamp}"]`)
-  const leavingSelectors = leaving.map(item => `[data-flip-id="card-${item.timestamp}"]`)
+  const leavingSelector = getCardSelector(leavingItem)
 
   ctx.value?.add(async () => {
-    // get the height of each element
-    const cardHeight = leavingSelectors[0] ? (document.querySelector(leavingSelectors[0]) as HTMLElement).offsetHeight : 0
-    const cardGap = 8
-    const leavingIndex = oldHistory.findIndex(item => isSameEntry(item, leaving[0]))
+    const leavingOffsetY = calculateCardOffsetY(oldHistory, leavingItem)
+    const leavingActivePreview = getCardActivePreview(leavingItem)
 
     const movingDuration = 0.5
     const movingStagger = 0.05
@@ -126,7 +179,10 @@ function removeHistoryEntry(newHistory: any[], oldHistory: any[]) {
     const flipState = Flip.getState(movingSelectors)
     const backgroundState = Flip.getState('[data-flip-id="history-bg"]')
     visibleHistory.value = [...newHistory]
-    leavingEntry.value = leaving[0]
+    leavingEntry.value = {
+      entry: leavingItem,
+      activePreview: leavingActivePreview,
+    }
     await nextTick()
     
     const timeline = gsap.timeline({ onComplete: () => {
@@ -145,11 +201,11 @@ function removeHistoryEntry(newHistory: any[], oldHistory: any[]) {
       absolute: true,
       targets: movingSelectors
     }), 0)
-    timeline.set(leavingSelectors, {
+    timeline.set(leavingSelector, {
       x: 0,
-      y: leavingIndex * (cardHeight + cardGap)
+      y: leavingOffsetY
     }, 0)
-    timeline.to(leavingSelectors, {
+    timeline.to(leavingSelector, {
       opacity: 0,
       x: 100,
       duration: 0.5,

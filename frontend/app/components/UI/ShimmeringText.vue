@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative">
     <component
       :is="as"
       class="shimmer absolute text-transparent! z-1"

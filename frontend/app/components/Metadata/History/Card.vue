@@ -107,13 +107,15 @@
       </div>
     </UICard>
 
-    <MetadataHistoryDetails
-      v-if="showDetails"
-      ref="details"
-      :entry="entry"
-      :flip-id="flipId"
-      @close="closeDetails"
-    />
+    <Teleport to="body">
+      <MetadataHistoryDetails
+        v-if="showDetails"
+        ref="details"
+        :entry="entry"
+        :flip-id="flipId"
+        @close="closeDetails"
+      />
+    </Teleport>
   </div>
 </template>
 

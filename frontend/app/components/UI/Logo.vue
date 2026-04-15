@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink to="https://lookitval.com" style="aspect-ratio: 1000 / 450;">
+  <a href="https://lookitval.com" style="aspect-ratio: 1000 / 450;" @click.prevent="navigate">
     <svg height="100%" viewBox="0 0 1000 450" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="logo-gradient" cx="20%" cy="0%" r="150%" fx="50%" fy="50%">
@@ -129,12 +129,21 @@
         <circle r="100" cx="1100" cy="450" fill="white"/>
       </g>
     </svg>
-  </NuxtLink>
+  </a>
 </template>
 
 <script lang="ts" setup>
 import { gsap } from 'gsap';
 import { useConstants } from '@/composables/constants';
+
+const TRANSITION_MS = 400
+const overlayVisible = useState('page-overlay', () => false)
+
+async function navigate() {
+  overlayVisible.value = true
+  await new Promise(resolve => setTimeout(resolve, TRANSITION_MS))
+  window.location.href = 'https://lookitval.com'
+}
 
 const { COLORS: _COLORS } = useConstants();
 

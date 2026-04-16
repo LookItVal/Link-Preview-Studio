@@ -258,52 +258,61 @@ Below are some examples of previews I think would be handy:
 When looking at some sources, it seems that some source urls could not be fetched, some of which could not be fetched by other scrapers, and some of them could. Each of these should be looked into to understand the limitations and improve the robustness of the scraper.
 Additionally, different scrapers seemed to pull different sets of meta tags or page content depending on the source.
 Each of these were checked against the following sources:
-- `https://metatags.io/`
-- `https://www.opengraph.xyz/`
+- `metatags.io/`
+- `www.opengraph.xyz/`
 - Live Slack (just sending a message with the URL)
-- `https://www.linkedin.com/post-inspector/inspect/` <- Native inspector for LinkedIn
+- `www.linkedin.com/post-inspector/inspect/` <- Native inspector for LinkedIn
 - A native post inspector does seem to exist for both facebook and twitter but they both require accounts to access. I do not have a facebook or twitter account anddid not explore these further.
 
 Below are examples of discrepancies in how different scrapers fetched URLs and their meta tags. (Ignore the sources, most of these are found from random news feeds or social media posts at random.)
 
-- `https://www.cbsnews.com/news/pete-hegseth-impeachment-articles-house-democrats/?utm_source=firefox-newtab-en-us`
-  - This app, `https://metatags.io/`, and `https://www.opengraph.xyz/` all fetched this URL with similar styles.
-  - Live Slack and Linkedin Post Inspector both were unable to fetch the leading image.
-  - `https://metatags.io/` was unable to fetch the favicon.
-- `https://www.usatoday.com/story/entertainment/movies/2026/04/16/spaceballs-sequel-cinemacon/89638149007/?utm_source=firefox-newtab-en-us`
-  - Everything fetched this Url about the same
-  - `https://metatags.io/` was unable to fetch the favicon.
-- `https://www.popularmechanics.com/science/archaeology/a71016439/cold-war-bunker-castle/?utm_source=firefox-newtab-en-us`
-  - `https://metatags.io/` and Slack were both able to fetch the favicon but this app was not able to.
-- `https://www.npr.org/2026/04/15/nx-s1-5784021/eric-swalwell-resignation-california-congress?utm_source=firefox-newtab-en-us`
-  - This app spends a long time processing this request before returning "NetworkError when attempting to fetch resource."
-  - This seems to happen all across npr.org URLs.
-  - All other preview systems were able to fetch this URL without issues.
-- `https://www.si.com/nba/chris-paul-clippers-lose-meme-warriors?utm_source=firefox-newtab-en-us`
-  - `https://metatags.io/` and Slack were both able to fetch the favicon but this app was not able to.
-- `https://youtu.be/oaXRREHVkHo?si=Y93gy5e6DNqWF_pv`
-  - Almost none of the preview systems were able to fetch this URL correctly.
-  - `https://metatags.io/` Pulled generic Titles and descriptions for all of youtube rather than about the video, and no image at all.
-  - `https://www.opengraph.xyz/` Errored out: `This website is rate-limiting requests. To allow our scanner through, add these IP ranges to your firewall: 74.220.48.0/24 and 74.220.56.0/24.`
-  - The official LinkedIn Post inspector was able to pull the title of the video, but no image.
-  - Slack of course pulled not only the title and image, but also an iframe embedding the video.
-  - This app pulled the thumbnail of the video, the title of the video, and also the description of the video itself from the creator.
-- `https://www.thedailybeast.com/trump-yanks-millions-from-catholic-charities-amid-pope-feud/`
-  - This app is unable to fetch the favicon but all of the other apps are.
-- `https://en.wikipedia.org/wiki/Standard_Model`
-  - Slack was able to pull a large portion of the article in where the description was
-  - No other preview system pulled any description at all
-  - Slack listed the title of the host as "Wikipedia"
-  - This app listed the title of the host as "Wikimedia Foundation, Inc."
-  - `https://metatags.io/` was unable to fetch the host name and instead listed the full url  "https://en.wikipedia.org/wiki/Standard_Model"
-- `https://www.self.com/story/incline-walking-vs-running?utm_source=firefox-newtab-en-us`
-  - On this app, all image previews work except for in Slack (they should be referencing the same url so I'm not sure how this came to be)
-  - On this app, the title "Incline Walking vs. Running: What’s the Better Workout?" is converted into "Incline Walking vs. Running: Whatâs the Better Workout?". The `’` character is rendering as a `â` character instead.
-  - `https://metatags.io/` was unable to fetch the image in Most previews, but for some reason the Pinterest preview was able to.
-  - All other preview systems were able to fetch the image without issues.
+  1. `https://www.cbsnews.com/news/pete-hegseth-impeachment-articles-house-democrats/?utm_source=firefox-newtab-en-us`
+     - This app, `metatags.io/`, and `www.opengraph.xyz/` all fetched this URL with similar styles.
+     - Live Slack and Linkedin Post Inspector both were unable to fetch the leading image.
+     - `metatags.io/` was unable to fetch the favicon.
+  2. `https://www.usatoday.com/story/entertainment/movies/2026/04/16/spaceballs-sequel-cinemacon/89638149007/?utm_source=firefox-newtab-en-us`
+     - Everything fetched this Url about the same
+     - `metatags.io/` was unable to fetch the favicon.
+  3. `https://www.popularmechanics.com/science/archaeology/a71016439/cold-war-bunker-castle/?utm_source=firefox-newtab-en-us`
+     - `metatags.io/` and Slack were both able to fetch the favicon but this app was not able to.
+  4. `https://www.npr.org/2026/04/15/nx-s1-5784021/eric-swalwell-resignation-california-congress?utm_source=firefox-newtab-en-us`
+     - This app spends a long time processing this request before returning "NetworkError when attempting to fetch resource."
+     - This seems to happen all across npr.org URLs.
+     - All other preview systems were able to fetch this URL without issues.
+  5. `https://www.si.com/nba/chris-paul-clippers-lose-meme-warriors?utm_source=firefox-newtab-en-us`
+     - `https://metatags.io/` and Slack were both able to fetch the favicon but this app was not able to.
+  6. `https://youtu.be/oaXRREHVkHo?si=Y93gy5e6DNqWF_pv`
+     - Almost none of the preview systems were able to fetch this URL correctly.
+     - `metatags.io/` Pulled generic Titles and descriptions for all of youtube rather than about the video, and no image at all.
+     - `www.opengraph.xyz/` Errored out: `This website is rate-limiting requests. To allow our scanner through, add these IP ranges to your firewall: 74.220.48.0/24 and 74.220.56.0/24.`
+     - The official LinkedIn Post inspector was able to pull the title of the video, but no image.
+     - Slack of course pulled not only the title and image, but also an iframe embedding the video.
+     - This app pulled the thumbnail of the video, the title of the video, and also the description of the video itself from the creator.
+  7. `https://www.thedailybeast.com/trump-yanks-millions-from-catholic-charities-amid-pope-feud/`
+    - This app is unable to fetch the favicon but all of the other apps are.
+  8. `https://en.wikipedia.org/wiki/Standard_Model`
+     - Slack was able to pull a large portion of the article in where the description was
+     - No other preview system pulled any description at all
+     - Slack listed the title of the host as "Wikipedia"
+     - This app listed the title of the host as "Wikimedia Foundation, Inc."
+     - `metatags.io/` was unable to fetch the host name and instead listed the full url  "https://en.wikipedia.org/wiki/Standard_Model"
+  9. `https://www.self.com/story/incline-walking-vs-running?utm_source=firefox-newtab-en-us`
+     - On this app, all image previews work except for in Slack (they should be referencing the same url so I'm not sure how this came to be)
+     - On this app, the title "Incline Walking vs. Running: What’s the Better Workout?" is converted into "Incline Walking vs. Running: Whatâs the Better Workout?". The `’` character is rendering as a `â` character instead.
+     - `metatags.io/` was unable to fetch the image in Most previews, but for some reason the Pinterest preview was able to.
+     - All other preview systems were able to fetch the image without issues.
+  10. `https://www.linkedin.com/in/qcecil/`
+      - This app encountered an error: `NetworkError when attempting to fetch resource.` This error happened nearly instantly.
+      - `metatags.io/` silently errored out and did not provide any preview.
+      - `www.opengraph.xyz` gave the following error: `The website's server encountered an error. Try again later.`
+      - The linkedin post inspector was able to pull the title of the profile, but no image.
+      - Slack was able to pull the title and the following description:
+        - Experience: Propaganda3 · Education: Johnson County Community College · Location: Kansas City Metropolitan Area · 18 connections on LinkedIn. View Quinn Cecil’s profile on LinkedIn, a professional community of 1 billion members.
 
+In testing at home I remember having other outright errors pop up, but I did not document them at the time and I am having a hard time finding URLs that cause more outright errors.
 
 
 ### 6 Minor Issues
 
 - I dont think the color theme is saved at all. Should probably save the last set color theme to a cookie so it doesnt reset on reload.
+- If you rush clicking around while animations are happening, they can sometimes get stuck or behave unexpectedly. This should be solvable by disabling interactions during animations or properly handling animation states.

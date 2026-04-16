@@ -289,7 +289,7 @@ Below are examples of discrepancies in how different scrapers fetched URLs and t
      - Slack of course pulled not only the title and image, but also an iframe embedding the video.
      - This app pulled the thumbnail of the video, the title of the video, and also the description of the video itself from the creator.
   7. `https://www.thedailybeast.com/trump-yanks-millions-from-catholic-charities-amid-pope-feud/`
-    - This app is unable to fetch the favicon but all of the other apps are.
+     - This app is unable to fetch the favicon but all of the other apps are.
   8. `https://en.wikipedia.org/wiki/Standard_Model`
      - Slack was able to pull a large portion of the article in where the description was
      - No other preview system pulled any description at all

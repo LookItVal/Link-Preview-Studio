@@ -323,7 +323,7 @@ Below are examples of discrepancies in how different scrapers fetched URLs and t
 In testing at home I remember having other outright errors pop up, but I did not document them at the time and I am having a hard time finding URLs that cause more outright errors.
 
 
-### 6 Minor Issues
+### 6. Minor Issues
 
 - I dont think the color theme is saved at all. Should probably save the last set color theme to a cookie so it doesnt reset on reload.
 - If you rush clicking around while animations are happening, they can sometimes get stuck or behave unexpectedly. This should be solvable by disabling interactions during animations or properly handling animation states.

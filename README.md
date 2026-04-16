@@ -327,3 +327,4 @@ In testing at home I remember having other outright errors pop up, but I did not
 
 - I dont think the color theme is saved at all. Should probably save the last set color theme to a cookie so it doesnt reset on reload.
 - If you rush clicking around while animations are happening, they can sometimes get stuck or behave unexpectedly. This should be solvable by disabling interactions during animations or properly handling animation states.
+- Some platforms likely do have slightly different formatting with light mode and dark mode. Because I never tested these in real enviroments I was never able to determine for sure if and what differences there are in the formatting of their light and dark mode pages.

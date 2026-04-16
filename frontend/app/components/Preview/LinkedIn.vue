@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-[526px] overflow-hidden rounded-lg border border-[#8c8c8c33] bg-white font-[system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Helvetica,Arial,sans-serif] [-webkit-font-smoothing:antialiased] [-moz-osx-font-smoothing:grayscale] p-3 mx-auto">
     <div class="flex items-stretch">
-      <div class="shrink-0 w-32 h-[72px] relative overflow-hidden rounded-lg">
+      <div v-if="image" class="shrink-0 w-32 h-[72px] relative overflow-hidden rounded-lg">
         <div class="w-full h-full relative">
           <img class="h-full w-full absolute top-0 object-cover block" :src="image">
         </div>

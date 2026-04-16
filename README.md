@@ -308,6 +308,17 @@ Below are examples of discrepancies in how different scrapers fetched URLs and t
       - The linkedin post inspector was able to pull the title of the profile, but no image.
       - Slack was able to pull the title and the following description:
         - Experience: Propaganda3 · Education: Johnson County Community College · Location: Kansas City Metropolitan Area · 18 connections on LinkedIn. View Quinn Cecil’s profile on LinkedIn, a professional community of 1 billion members.
+  11. `https://www.reddit.com/user/LookItVal/`
+      - This app pulled the title: "Reddit - Please wait for verification" with no description.
+      - `metatags.io/` silently errored out and did not provide any preview.
+      - `www.opengraph.xyz` Pulled the same information as this app.
+      - The linkedin post inspector was able to pull the title "Check out LookItVal’s Reddit profile" and a relevant image.
+      - Slack was able to pull the title and a relevant description, and a relevant image.
+  12. `https://www.google.com/`
+      - This app pulled the title and description with no image.
+      - Slack actaully did not provide a preview for this URL at all.
+      - `metatags.io/` Seems to have only pulled the title, no description and no image.
+  
 
 In testing at home I remember having other outright errors pop up, but I did not document them at the time and I am having a hard time finding URLs that cause more outright errors.
 

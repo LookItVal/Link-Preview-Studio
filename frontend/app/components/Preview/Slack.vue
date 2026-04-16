@@ -14,7 +14,7 @@
       <div class="font-['Noto_Sans','NotoSansJP','Slack-Lato','Lato','appleLogo',sans-serif] text-[15px] leading-[1.46666667] wrap-break-words antialiased">
         {{ description }}
       </div>
-      <div class="rounded-sm shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] mt-[5px] max-w-[360px] h-[189px] bg-cover bg-center" :style="`background-image: url(${image});`" />
+      <div v-if="image" class="rounded-sm shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] mt-[5px] max-w-[360px] h-[189px] bg-cover bg-center" :style="`background-image: url(${image});`" />
     </div>
   </div>
 </template>

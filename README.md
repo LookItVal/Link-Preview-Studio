@@ -221,7 +221,7 @@ This does require a cookie notification to inform users that their session data 
 
 ## Future Considerations
 
-The next step is to implement more specialized scrapers. Right now the "Universal Waterfall" works for most sites, but platforms like Slack clearly use specialized techniques to pull richer information from big domains.
+The next step is to implement more specialized scrapers. Right now this generic scraper works for most sites, but platforms like Slack clearly use specialized techniques to pull richer information from big domains.
 
 ### 1. The Wikipedia / Content Driver
 
@@ -240,3 +240,70 @@ Beyond video and wiki content, several other page types deserve custom rendering
 - **E-commerce (Amazon/Shopify)**: Scrapers might pull data from price or reviews in some previews.
 - **Professional Profiles (LinkedIn)**: Scrapers might pull specific data such as company information or job posting details (like location and salary range) from JSON-LD schemas.
 - **Documentation (GitHub/MDN)**: Scrapers might pull repo statistics (stars, forks) or documentation breadcrumbs.
+
+### 4. More Previews
+
+Some Previews like LinkedIn seem to have different versions for mobile and desktop, and I think I only made the preview for mobile. More research should go into testing these links from the actual platform to know how they were done accurately.
+Slack also appears to be slightly different in the live enviroment than the example previews, in particular in that it has an arrow to collapse or expand parts of the preveiw, and bit of text saying how big the image(?) is as well. This was not taken into account in this app.
+In this app I used mostly `https://www.opengraph.xyz/` as my reference for how previews should look and I have come to find that their previews are not always consistent with what some platforms actually display, or what other preview tools show.
+Additionally tools like `https://metatags.io/` also include previews for things like google, and while I know the exact description on google will actually vary depending on the search context, I find this a useful addition.
+Below are some examples of previews I think would be handy:
+- Google
+- Pinterest
+- WhatsApp
+- Discord
+
+### 5. Fetching Limitations
+
+When looking at some sources, it seems that some source urls could not be fetched, some of which could not be fetched by other scrapers, and some of them could. Each of these should be looked into to understand the limitations and improve the robustness of the scraper.
+Additionally, different scrapers seemed to pull different sets of meta tags or page content depending on the source.
+Each of these were checked against the following sources:
+- `https://metatags.io/`
+- `https://www.opengraph.xyz/`
+- Live Slack (just sending a message with the URL)
+- `https://www.linkedin.com/post-inspector/inspect/` <- Native inspector for LinkedIn
+- A native post inspector does seem to exist for both facebook and twitter but they both require accounts to access. I do not have a facebook or twitter account anddid not explore these further.
+
+Below are examples of discrepancies in how different scrapers fetched URLs and their meta tags. (Ignore the sources, most of these are found from random news feeds or social media posts at random.)
+
+- `https://www.cbsnews.com/news/pete-hegseth-impeachment-articles-house-democrats/?utm_source=firefox-newtab-en-us`
+  - This app, `https://metatags.io/`, and `https://www.opengraph.xyz/` all fetched this URL with similar styles.
+  - Live Slack and Linkedin Post Inspector both were unable to fetch the leading image.
+  - `https://metatags.io/` was unable to fetch the favicon.
+- `https://www.usatoday.com/story/entertainment/movies/2026/04/16/spaceballs-sequel-cinemacon/89638149007/?utm_source=firefox-newtab-en-us`
+  - Everything fetched this Url about the same
+  - `https://metatags.io/` was unable to fetch the favicon.
+- `https://www.popularmechanics.com/science/archaeology/a71016439/cold-war-bunker-castle/?utm_source=firefox-newtab-en-us`
+  - `https://metatags.io/` and Slack were both able to fetch the favicon but this app was not able to.
+- `https://www.npr.org/2026/04/15/nx-s1-5784021/eric-swalwell-resignation-california-congress?utm_source=firefox-newtab-en-us`
+  - This app spends a long time processing this request before returning "NetworkError when attempting to fetch resource."
+  - This seems to happen all across npr.org URLs.
+  - All other preview systems were able to fetch this URL without issues.
+- `https://www.si.com/nba/chris-paul-clippers-lose-meme-warriors?utm_source=firefox-newtab-en-us`
+  - `https://metatags.io/` and Slack were both able to fetch the favicon but this app was not able to.
+- `https://youtu.be/oaXRREHVkHo?si=Y93gy5e6DNqWF_pv`
+  - Almost none of the preview systems were able to fetch this URL correctly.
+  - `https://metatags.io/` Pulled generic Titles and descriptions for all of youtube rather than about the video, and no image at all.
+  - `https://www.opengraph.xyz/` Errored out: `This website is rate-limiting requests. To allow our scanner through, add these IP ranges to your firewall: 74.220.48.0/24 and 74.220.56.0/24.`
+  - The official LinkedIn Post inspector was able to pull the title of the video, but no image.
+  - Slack of course pulled not only the title and image, but also an iframe embedding the video.
+  - This app pulled the thumbnail of the video, the title of the video, and also the description of the video itself from the creator.
+- `https://www.thedailybeast.com/trump-yanks-millions-from-catholic-charities-amid-pope-feud/`
+  - This app is unable to fetch the favicon but all of the other apps are.
+- `https://en.wikipedia.org/wiki/Standard_Model`
+  - Slack was able to pull a large portion of the article in where the description was
+  - No other preview system pulled any description at all
+  - Slack listed the title of the host as "Wikipedia"
+  - This app listed the title of the host as "Wikimedia Foundation, Inc."
+  - `https://metatags.io/` was unable to fetch the host name and instead listed the full url  "https://en.wikipedia.org/wiki/Standard_Model"
+- `https://www.self.com/story/incline-walking-vs-running?utm_source=firefox-newtab-en-us`
+  - On this app, all image previews work except for in Slack (they should be referencing the same url so I'm not sure how this came to be)
+  - On this app, the title "Incline Walking vs. Running: What’s the Better Workout?" is converted into "Incline Walking vs. Running: Whatâs the Better Workout?". The `’` character is rendering as a `â` character instead.
+  - `https://metatags.io/` was unable to fetch the image in Most previews, but for some reason the Pinterest preview was able to.
+  - All other preview systems were able to fetch the image without issues.
+
+
+
+### 6 Minor Issues
+
+- I dont think the color theme is saved at all. Should probably save the last set color theme to a cookie so it doesnt reset on reload.

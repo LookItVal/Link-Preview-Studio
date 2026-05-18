@@ -1,10 +1,4 @@
-import { EventContext } from '@cloudflare/workers-types';
-
-interface Env {
-  CLOUDFLARE_TUNNEL_ID: string;
-}
-
-export async function onRequest(context: EventContext<Env, 'path', {}>) {
+export async function onRequest(context) {
   const url = new URL(context.request.url);
   
   // Cleanly parse catch-all route parameters with a fallback
@@ -35,7 +29,7 @@ export async function onRequest(context: EventContext<Env, 'path', {}>) {
     console.log(`[Proxy] Backend responded with HTTP Status: ${response.status}`);
     return response;
 
-  } catch (error: any) {
+  } catch (error) {
     // Captures network dropouts, SSL handshake issues, or faulty tunnel IDs
     console.error(`[Proxy CRITICAL] Fetch pipeline failed completely: ${error.message || error}`);
     

@@ -17,12 +17,11 @@ export function useMetaSearch() {
     error.value = null;
     
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
+      const response = await fetch(`${endpoint}?url=${encodeURIComponent(query)}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url: query })
+        }
       });
 
       if (!response.ok) {
